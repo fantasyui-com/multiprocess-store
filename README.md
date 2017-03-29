@@ -11,3 +11,7 @@ ES6-and-beyond multiprocess-safe file-system-based object-store.
 ## Usage
 
   see test.js
+
+## Enable Harmony
+
+  node --harmony --trace-warnings test.js

@@ -1,10 +1,10 @@
 {
   "name": "multiprocess-store",
   "version": "1.0.0",
-  "description": "",
+  "description": "ES6-and-beyond multiprocess-safe file-system-based object-store.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --harmony --trace-warnings test.js"
   },
   "keywords": [],
   "author": "",
@@ -19,5 +19,14 @@
     "pify": "^2.3.0",
     "rimraf": "^2.6.1",
     "uuid": "^3.0.1"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fantasyui-com/multiprocess-store.git"
+  },
+  "bugs": {
+    "url": "https://github.com/fantasyui-com/multiprocess-store/issues"
+  },
+  "homepage": "https://github.com/fantasyui-com/multiprocess-store#readme"
 }

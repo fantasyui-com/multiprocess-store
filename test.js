@@ -34,7 +34,6 @@ let tests = async function(){
     let bobCopyOfObject = await store.getObject('helloObject');
 
     // both alice and bob have a copy.
-
     // now they make an incompatible change!!!
 
     aliceCopyOfObject.secret = uuid();
