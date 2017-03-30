@@ -6,9 +6,9 @@
   "scripts": {
     "test": "node --harmony --trace-warnings test.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["multiprocess", "store", "file-system", "object-storage"],
+  "author": "Captain Fantasy",
+  "license": "GPL-3.0",
   "dependencies": {
     "alphanum-sort": "^1.0.2",
     "expand-tilde": "^2.0.2",
