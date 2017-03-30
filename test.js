@@ -21,6 +21,7 @@ let tests = async function(){
 
     let storeObject = await store.getObject('helloObject');
     storeObject.secret = secret;
+    console.log('storeObject',storeObject)
     await store.updateObject(storeObject);
 
     let updatedObject = await store.getObject(storeObject._id);
