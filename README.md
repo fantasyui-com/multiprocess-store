@@ -100,11 +100,6 @@ Get all objects from the store.
         }
       ];
 
-
-## Usage
-
-    see test*
-
 ## Notes
 
 Please Enable Harmony for async/await
