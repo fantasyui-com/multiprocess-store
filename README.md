@@ -3,6 +3,68 @@ multiprocess-store
 
 ES6-and-beyond multiprocess-safe file-system-based object-store.
 
+## Install
+
+    npm --save install multiprocess-store
+
+### Require and Initialize
+
+    const objectStore = require('multiprocess-store');
+    /* .. */
+    const store = await objectStore.createStore('~/Tests/test-store-1');
+
+### Run your app with --harmony flag
+
+    node --harmony my-app.js
+
+## Examples
+
+### Insert or update an object (upsert)
+
+      const objectStore = require('multiprocess-store');
+      const myApp = async function() {
+
+          const store = await objectStore.createStore('~/Tests/test-store-1');
+
+          await store.upsertObject({
+              _id: 'helloObject',
+              text: 'Hello Object Store!'
+          });
+
+          console.log(await store.getObject('helloObject'));
+
+      };
+      myApp();
+
+
+
+### Insert or Update, and then modify the object.
+
+      npm --save install multiprocess-store
+
+      const objectStore = require('multiprocess-store');
+      const myApp = async function() {
+          const store = await objectStore.createStore('~/Tests/test-store-2');
+
+          await store.upsertObject({
+              _id: 'helloObject',
+              text: 'Hello Object Store!'
+          })
+
+          // Make an update
+          let storeObject = await store.getObject('helloObject');
+          storeObject.secret = 'Cats are little people!';
+          await store.updateObject(storeObject);
+
+          console.log(await store.getObject('helloObject'));
+      };
+      myApp();
+
+
+      # use the --harmony flag when running your application
+      node --harmony my-app.js
+
+
 ## A quick note on revision conflicts in a distributed, unreliable, multicore, networked world.
 
 Revision conflicts occur when two processes write at the same time to the same revision. That is to say, two separate programs requested a copy of an object at the same time/object-state, modified the data and performed an ```updateObject``` slipping through the cracks between atomic disk IO and node multiprocessing ```race conditions```.
@@ -24,12 +86,8 @@ If one of those machines made another change later in the night, and saved revis
 Again conflict resolution is not a theoretical problem, nor is it a general problem for generic databases, it depends on your particular application, needs, network, customers, administrators, foresight, and technology.
 
 Thank you for reading,<br>
-and please don't block your I/O.<br>
+don't block your I/O.<br>
 Dr. M.
-
-## Install
-
-    npm --save install multiprocess-store
 
 ## API
 

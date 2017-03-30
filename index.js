@@ -39,6 +39,8 @@ class StoreObject {
     } catch (err){
       if (err.code == 'EEXIST') {
         throw new Error(error.OBJECT_ALREADY_EXISTS)
+      }else{
+        throw err;
       }
     }
 
@@ -76,7 +78,7 @@ class StoreObject {
     let [currentRevision] = latestRevision.split('-',1);
     let newRevision = parseInt(currentRevision) + 1;
     let revId = uuidV4().replace(/-/g,'');
-    let rev = [newRevision,  ].join('-');
+    let rev = [newRevision, revId].join('-');
 
     let objectFilename = path.join( this.path, rev );
 
@@ -158,6 +160,29 @@ class ObjectStore {
 
     } catch(e) {
       reject(e);
+    }
+
+    });
+  }
+  async upsertObject(obj){
+    return new Promise(async (resolve, reject) => {
+
+    try {
+
+      let storeObject = new StoreObject({store:this, data:obj});
+      let response = await storeObject.create();
+      resolve(response);
+
+    } catch(err) {
+
+      if(err.message.startsWith('OBJECT_ALREADY_EXISTS') ){
+        let response = await this.updateObject(obj);
+        resolve(response);
+      }else{
+
+        reject(err);
+      }
+
     }
 
     });
