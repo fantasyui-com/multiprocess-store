@@ -3,66 +3,201 @@ multiprocess-store
 
 ES6-and-beyond multiprocess-safe file-system-based object-store.
 
+## Node Version
+
+  Use the 7.x branch as it supports async/await via --harmony flag.
+  Note that node 7.6.0 and above does not require the --harmony flag.
+
 ## Install
 
-    npm --save install multiprocess-store
+```shell
+
+npm --save install multiprocess-store
+
+```
 
 ### Require and Initialize
 
-    const objectStore = require('multiprocess-store');
-    /* .. */
-    const store = await objectStore.createStore('~/Tests/test-store-1');
+```JavaScript
 
-### Run your app with --harmony flag
+const objectStore = require('multiprocess-store');
 
-    node --harmony my-app.js
+const store = await objectStore.createStore('~/Tests/my-objects');
+
+await store.upsertObject({
+    _id: 'helloWorldObject',
+    text: 'Cats are little people!'
+});
+
+console.log(await store.getObject('helloObject'));
+```
+
+### Async/Await and ES6+
+
+Use the --harmony flag to enable async/await in older 7.x.
+Node 7.6 and up does not require the --harmony flag.
+
+node <7.6.0
+
+```shell
+
+node --harmony my-app.js
+
+```
+
+node >=7.6.0
+
+```shell
+
+node my-app.js
+
+```
 
 ## Examples
 
 ### Insert or update an object (upsert)
 
-      const objectStore = require('multiprocess-store');
-      const myApp = async function() {
+```JavaScript
 
-          const store = await objectStore.createStore('~/Tests/test-store-1');
+const objectStore = require('multiprocess-store');
+const myApp = async function() {
 
-          await store.upsertObject({
-              _id: 'helloObject',
-              text: 'Hello Object Store!'
-          });
+    const store = await objectStore.createStore('~/Tests/test-store-1');
 
-          console.log(await store.getObject('helloObject'));
+    await store.upsertObject({
+        _id: 'helloObject',
+        text: 'Hello Object Store!'
+    });
 
-      };
-      myApp();
+    console.log(await store.getObject('helloObject'));
 
+};
 
+myApp();
+
+```
 
 ### Insert or Update, and then modify the object.
 
-      npm --save install multiprocess-store
+```JavaScript
 
-      const objectStore = require('multiprocess-store');
-      const myApp = async function() {
-          const store = await objectStore.createStore('~/Tests/test-store-2');
+const objectStore = require('multiprocess-store');
+const myApp = async function() {
+    const store = await objectStore.createStore('~/Tests/test-store-2');
 
-          await store.upsertObject({
-              _id: 'helloObject',
-              text: 'Hello Object Store!'
-          })
+    await store.upsertObject({
+        _id: 'helloObject',
+        text: 'Hello Object Store!'
+    })
 
-          // Make an update
-          let storeObject = await store.getObject('helloObject');
-          storeObject.secret = 'Cats are little people!';
-          await store.updateObject(storeObject);
+    // Make an update
+    let storeObject = await store.getObject('helloObject');
+    storeObject.secret = 'Cats are little people!';
+    await store.updateObject(storeObject);
 
-          console.log(await store.getObject('helloObject'));
-      };
-      myApp();
+    console.log(await store.getObject('helloObject'));
+};
 
+myApp();
 
-      # use the --harmony flag when running your application
-      node --harmony my-app.js
+```
+
+## API
+
+Create the disk based store:
+
+```JavaScript
+
+const store = await objectStore.createStore('/tmp/a-user-manager-store');
+=> store
+
+// tilde will resolve to user home directory
+const store = await objectStore.createStore('~/Tests/hello-store');
+=> store // in user's home: /Users/captain-fantasy/Tests/hello-store
+
+```
+
+Crete an object with id hello.
+
+```JavaScript
+
+await store.createObject({_id:'hello', email:'alice@example.com'});
+=> true;
+
+```
+
+Retrieve an object from the store by its id.
+
+```JavaScript
+
+let _id = 'hello';
+await store.getObject(_id);
+=> obj // the requested object, it will contain _id and _rev fields
+
+```
+
+Update a recently retrieved and edited object.
+
+```JavaScript
+
+await store.updateObject(obj);
+=> true;
+
+```
+
+Delete an object using its id.
+
+```JavaScript
+
+let _id = 'hello';
+await store.deleteObject(_id)
+=> true;
+
+```
+
+Get revision conflicts.
+
+```JavaScript
+
+let _id = 'hello';
+await store.getConflicts(_id);
+=> [
+    [
+      "17-2351d3253f494398acb7b6c1f3ae293d",
+      "17-3636fcd8b0dd4de9b851acb734204baa"
+    ],
+    [
+      "31-16f79c01537740efab08ccac7417c22b",
+      "31-71b27cfb062d4105a733fc69e728abd9"
+    ]
+  ];
+
+```
+
+Get all objects from the store. (Use .filter(), .map() and/or lodash on returned data)
+
+```JavaScript
+
+await store.getAllObjects();
+=> [
+    {
+      "_id": "alice",
+      "password": "42b3fdf4-12f7-4915-b218-599d08b001c4",
+      "_rev": "56-34a2bb6f366143b999241f099e3e29c3"
+    },
+    {
+      "_id": "bob",
+      "password": "123",
+      "_rev": "0-94bdde39692f48018e097cf4d1698931"
+    },
+    {
+      "_id": "carol",
+      "password": "hunter2",
+      "_rev": "0-fe93b45cb46d4a9bbe4a44f11a62ee27"
+    }
+  ];
+
+```
 
 
 ## A quick note on revision conflicts in a distributed, unreliable, multicore, networked world.
@@ -85,83 +220,8 @@ If one of those machines made another change later in the night, and saved revis
 
 Again conflict resolution is not a theoretical problem, nor is it a general problem for generic databases, it depends on your particular application, needs, network, customers, administrators, foresight, and technology.
 
-Thank you for reading,<br>
-don't block your I/O.<br>
-Dr. M.
+Don't block I/O.
 
-## API
+### LICENSE
 
-Create the disk based store:
-
-    const store = await objectStore.('/tmp/a-user-manager-store');
-    => store
-
-    // protip: you can use tilde for that
-    // relaxed couch feel:
-    .createStore('~/Tests/hello-store')
-
-Crete an object with id hello.
-
-    await store.createObject({_id:'hello', email:'alice@example.com'});
-    => true;
-
-Retrieve an object from the store by its id.
-
-    let _id = 'hello';
-    await store.getObject(_id);
-    => obj // the requested object, it will contain _id and _rev fields
-
-Update a recently retrieved and edited object.
-
-    await store.updateObject(obj);
-    => true;
-
-Delete an object using its id.
-
-    let _id = 'hello';
-    await store.deleteObject(_id)
-    => true;
-
-Get revision conflicts.
-
-    let _id = 'hello';
-    await store.getConflicts(_id);
-    => [
-        [
-          "17-2351d3253f494398acb7b6c1f3ae293d",
-          "17-3636fcd8b0dd4de9b851acb734204baa"
-        ],
-        [
-          "31-16f79c01537740efab08ccac7417c22b",
-          "31-71b27cfb062d4105a733fc69e728abd9"
-        ]
-      ];
-
-Get all objects from the store.
-
-    await store.getAllObjects();
-    => [
-        {
-          "_id": "alice",
-          "password": "42b3fdf4-12f7-4915-b218-599d08b001c4",
-          "_rev": "56-34a2bb6f366143b999241f099e3e29c3"
-        },
-        {
-          "_id": "bob",
-          "password": "123",
-          "_rev": "0-94bdde39692f48018e097cf4d1698931"
-        },
-        {
-          "_id": "carol",
-          "password": "hunter2",
-          "_rev": "0-fe93b45cb46d4a9bbe4a44f11a62ee27"
-        }
-      ];
-
-## Notes
-
-Please Enable Harmony for async/await
-
-    node --harmony --trace-warnings test.js
-
-See test*.js for various scenarios and simulations.
+GPLv3
