@@ -176,8 +176,11 @@ class ObjectStore {
     } catch(err) {
 
       if(err.message.startsWith('OBJECT_ALREADY_EXISTS') ){
-        let response = await this.updateObject(obj);
+
+        let existing = await this.getObject(obj._id);
+        let response = await this.updateObject(Object.assign(existing,obj));
         resolve(response);
+        
       }else{
 
         reject(err);
