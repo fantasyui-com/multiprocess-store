@@ -1,18 +1,19 @@
 multiprocess-store
 ==================
 
-ES6-and-beyond multiprocess-safe file-system-based object-store.
+ES6-and-beyond multiprocess-safe file-system-based JSON-formatted object-store.
 
 ## Node Version
 
   Use the 7.x branch as it supports async/await via --harmony flag.
   Note that node 7.6.0 and above does not require the --harmony flag.
+  Overall, use latest version of node.
 
 ## Install
 
 ```shell
 
-npm --save install multiprocess-store
+npm i multiprocess-store
 
 ```
 
@@ -37,7 +38,7 @@ console.log(await store.getObject('helloObject'));
 Use the --harmony flag to enable async/await in older 7.x.
 Node 7.6 and up does not require the --harmony flag.
 
-node <7.6.0
+node <7.6.0 example
 
 ```shell
 
@@ -45,7 +46,7 @@ node --harmony my-app.js
 
 ```
 
-node >=7.6.0
+node >=7.6.0 example
 
 ```shell
 
@@ -202,13 +203,33 @@ await store.getAllObjects();
 
 ## A quick note on revision conflicts in a distributed, unreliable, multicore, networked world.
 
-Revision conflicts occur when two processes write at the same time to the same revision. That is to say, two separate programs requested a copy of an object at the same time/object-state, modified the data and performed an ```updateObject``` slipping through the cracks between atomic disk IO and node multiprocessing ```race conditions```.
+Revision conflicts occur when two actors write at the same time to the same revision number. That is to say, two separate programs requested a copy of an object at the same time/object-state (ex. on a Monday Evening), modified the data and performed an ```updateObject``` slipping through the cracks between atomic disk IO and node multiprocessing ```race conditions``` at the same time, on High Noon Tuesday.
 
-Revision conflicts occur due to race conditions that emerge between multiprocessing and non-atomic disk IO. Revision conflicts occur in rare conditions, and solving them depends on your particular application. If it is a user manager for administrators, flag account as needing attention. If it is a wiki, proudly parade the conflict as needing human attention. If it is a fabulous RGB color generator for your new website, just ignore it.
+Revision conflicts occur due to race conditions that emerge between multiple users, multiprocessing, and non-atomic disk IO. Revision conflicts occur in rare conditions, and solving them depends on your particular application.
 
-A new revision of a document means that a conflict is probably not important anymore. A conflict inside a previous revision becomes a signal that something may potentially need attention, maybe a bit of information can be moved into the latest revision all the way back from few weeks ago when some administrator made a note on an unreliable network connection somewhere.
+- If it is a user manager for administrators, flag account as needing attention.
+- If it is a wiki, proudly parade the conflict as needing human attention.
+- If it is a fabulous RGB color generator for your new website, just ignore it.
 
-Revision conflicts can only be solved by a human in context of a program that is using the store, however there is potential for auto-solving. Consider an event where both a very old conflict and the latest master have matching data for example email:alice@example.com this means that in this particular scenario the old revision conflict can be removed automatically as its data has been captured by the latest revision, be it by chance or because someone looked at the revision and moved that bit of data to the latest revision.
+A new revision of a document means that a conflict is ```probably``` not important anymore becasue a new document with a higher revision has been created. However, a conflict inside a previous revision becomes a signal that something may potentially need attention, maybe a bit of information can be moved into the latest revision all the way back from few weeks ago when some administrator made a note on an unreliable network connection somewhere.
+
+Revision conflicts can only be solved by a human in context of a program that is using the store, however there is great potential for auto-solving depending on your specific use case. Consider an event where both a very old conflict and the latest master have matching data for example email:alice@example.com this means that in this particular scenario the old revision conflict can be removed automatically as its data has been captured by the latest revision, be it by chance or because someone looked at the revision and moved that bit of data to the latest revision.
+
+Every revision is a file with a random name, saved in a directory named after the object id: ```alice-profile/3f700747-033f-486a-afbe-57e4f6662153-3```
+Whenever a new revision is made, a whole new random filename is generated: ```alice-profile/ef15f947-fe03-4de9-9926-0745c69373f5-4```
+
+To track revisions, the revision number is added to the filename: alice-profile/f94bc318-0ffd-4f13-b258-84420e97601c```-5``` when document is updated the new information is saved to a new random filename with a higher revision postfix alice-profile/```5b4c17f0-546f-47f6-95bb-1a10a107ebeb```-```6``` now.
+
+What you must understand is that when a race condition occurs, it does not endanger the data, information cannot be lost due to random filenames (UUIDs) both operations will succed in saving two separate files, with the same revision number. THe same revision number is then used as a red-flag for discovering that a conflict occured.
+
+Thusly,
+
+User #1 saves: alice-profile/ee30f92d-a785-4603-b0b8-b681b8707e39-3
+User #2 saves: alice-profile/56b1d51a-e2b8-4d6c-837b-61af06c6b272-3
+
+No information can be lost, but both will be unaware that they updated the same piece of data unless you quickly check for conflicts and ask either to merge them - depending on use case.
+
+When ```alice-profile``` is read, and a conflict is present, the winner is elected by sort() thus in a situation where two revisions are saved at the same time, and we have a tie, we choose the winner by just sorting the randomly generated filename, in effect we toss the dice; and the winner is chosen at random (by means of a random UUID).
 
 ### One Thousand Hosts, One Thousand Processes, One Million Revision Conflicts, No Headache.
 
@@ -218,9 +239,7 @@ If every machine contacted all other 999 machines, and copied their revision dat
 
 If one of those machines made another change later in the night, and saved revision 3 of important-passwords. All those 999 other machines, hoping to synchronize, would only copy that single revision 3 from that host. The other 999 machines would request revision 3.
 
-Again conflict resolution is not a theoretical problem, nor is it a general problem for generic databases, it depends on your particular application, needs, network, customers, administrators, foresight, and technology.
-
-Don't block I/O.
+Again conflict resolution is not a theoretical problem, nor is it a general problem for generic databases, it depends on your particular application, needs, network, customers, administrators, foresight, and technology. 
 
 ### LICENSE
 
