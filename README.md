@@ -2,6 +2,7 @@ multiprocess-store
 ==================
 
 ES6-and-beyond multiprocess-safe file-system-based JSON-formatted object-store.
+See https://github.com/fantasyui-com/und for an independent sister project.
 
 ## Node Version
 
