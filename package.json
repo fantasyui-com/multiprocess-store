@@ -21,7 +21,7 @@
     "alphanum-sort": "^1.0.2",
     "expand-tilde": "^2.0.2",
     "glob": "^7.1.4",
-    "lodash": "^4.17.14",
+    "lodash": "^4.17.15",
     "mkdirp": "^0.5.1",
     "node-fetch": "^1.6.3",
     "pify": "^2.3.0",
