@@ -25,7 +25,7 @@
     "mkdirp": "^0.5.1",
     "node-fetch": "^1.6.3",
     "pify": "^2.3.0",
-    "rimraf": "^2.6.1",
+    "rimraf": "^2.7.1",
     "uuid": "^3.0.1"
   },
   "devDependencies": {},
