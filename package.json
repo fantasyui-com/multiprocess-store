@@ -7,7 +7,8 @@
     "node": ">=7.0.0"
   },
   "scripts": {
-    "test": "node --harmony --trace-warnings test.js"
+    "test": "node --harmony --trace-warnings test.js",
+    "save": "git add .; git commit -m 'New Release'; git push; npm version patch; npm publish; git push;"
   },
   "keywords": [
     "multiprocess",
@@ -15,7 +16,7 @@
     "file-system",
     "object-storage"
   ],
-  "author": "Captain Fantasy <fantasyui.com@gmail.com> (http://fantasyui.com)",
+  "author": "fantasyui.com <fantasyui.com@gmail.com>",
   "license": "GPL-3.0",
   "dependencies": {
     "alphanum-sort": "^1.0.2",
@@ -23,7 +24,7 @@
     "glob": "^7.1.6",
     "lodash": "^4.17.15",
     "mkdirp": "^0.5.1",
-    "node-fetch": "^1.6.3",
+    "node-fetch": "^3.0.0",
     "pify": "^2.3.0",
     "rimraf": "^2.7.1",
     "uuid": "^3.4.0"
