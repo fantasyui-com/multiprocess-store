@@ -1,6 +1,6 @@
 {
   "name": "multiprocess-store",
-  "version": "1.14.0",
+  "version": "1.15.0",
   "description": "ES6-and-beyond multiprocess-safe file-system-based object-store.",
   "main": "index.js",
   "engines": {
